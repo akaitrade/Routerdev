@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="thrift.js"></script>
+    <script src="nacl.js"></script>
+    <script src="api/API.js"></script>
+    <script src="general/general_types.js"></script>
+    <script src="api/api_types.js"></script>
+    <script src="base58.js"></script>
+    <script src="Util.js"></script>
+
+    <title>CS Router</title>
+    <script>
+        function run()
+        {
+            const params = new URLSearchParams(document.location.search);
+            const id = params.get("id");
+            console.info(id); 
+            var url = "http://89.117.62.126:8680";
+            var client = new CreditsUtils("", "", "", url);
+            function b64DecodeUnicode(str) {
+                // Going backwards: from bytestream, to percent-encoding, to original string.
+                return decodeURIComponent(atob(str).split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+            }
+            //var x = client.transactionGet( { poolSeq: 65167780, index: 0 } ); //"4894857.109");
+            var x = client.transactionGet( { poolSeq: id, index: 0 } ); //"4894857.109");
+            try {
+                // Create an image element
+                var img = new Image();
+                // Set the source of the image to the base64 string
+                img.src = "data:image/png;base64," + x.transaction.trxn.userFields;
+                // Append the image to the document body or any other container element
+                document.body.appendChild(img);
+            } catch (error) {
+                console.error("Error converting base64 to image:", error);
+            }
+            document.body.innerHTML = b64DecodeUnicode(x.transaction.trxn.userFields)
+           
+            attachEventListeners();
+        }
+        function attachEventListeners() {
+            // Example: Reattach event listeners
+            const getBalanceBtn = document.getElementById('getBalanceButton');
+            if (getBalanceBtn) getBalanceBtn.onclick = getBalance;
+            
+            const mintTokenBtn = document.getElementById('mintTokenButton');
+            if (mintTokenBtn) mintTokenBtn.onclick = mintToken;
+        }
+        function ready() {
+            run();
+        }
+        
+        
+        document.addEventListener("DOMContentLoaded", ready);
+
+        
+    </script>
+</head>
+<body>
+</body>
+</html>
